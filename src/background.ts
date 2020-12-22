@@ -55,30 +55,28 @@ function b_setEnabled(isEnabled: boolean): boolean {
 
 function b_updateTabInfo(tabId: number): void {
   chrome.tabs.get(tabId, (tab) => {
-    if (currentTabInfo === undefined || tab.url !== currentTabInfo?.url) {
-      if (/^https:\/\/www\.twitch/.test(tab.url)) {
-        currentTabInfo = tab;
-        // chrome.tabs.executeScript(null, { file: "./js/foreground.js" }, () =>
-        //   console.log("Injected")
-        // );
-        const startIndex = tab.url.indexOf("twitch.tv/") + 10;
-        const endIndex = tab.url.indexOf("/", startIndex);
-        const channel: string = tab.url.substring(
-          startIndex,
-          endIndex === -1 ? undefined : endIndex
-        );
-        b_sendUpdatedTab(channel);
-      }
+    // if (currentTabInfo === undefined || tab.url !== currentTabInfo?.url) {
+    if (/^https:\/\/www\.twitch/.test(tab.url)) {
+      currentTabInfo = tab;
+      // chrome.tabs.executeScript(null, { file: "./js/foreground.js" }, () =>
+      //   console.log("Injected")
+      // );
+      const startIndex = tab.url.indexOf("twitch.tv/") + 10;
+      const endIndex = tab.url.indexOf("/", startIndex);
+      const channel: string = tab.url.substring(
+        startIndex,
+        endIndex === -1 ? undefined : endIndex
+      );
+      b_sendUpdatedTab(channel);
     }
+    // }
   });
 }
 
 function b_sendUpdatedTab(channel: string): void {
   fetch("http://localhost:6748?channel=" + channel)
     .then((res) => res.json())
-    .then((res) => {
-      console.log(res);
-    })
+    .then((res) => {})
     .catch((res) => {
       console.log(res);
     });
